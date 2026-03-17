@@ -2,3 +2,7 @@ docs/
 images/
 node_modules/
 .env*
+.vscode/
+.idea/
+.DS_Store
+.agent/
