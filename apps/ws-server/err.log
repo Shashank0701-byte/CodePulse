@@ -1,0 +1,33 @@
+D:\Claude Projects\CodePulse\node_modules\.pnpm\@prisma+client@7.5.0_prisma_6ee567b319ba67f6e5d679956c886ad8\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:320
+        throw new PrismaClientInitializationError(
+              ^
+PrismaClientInitializationError: `PrismaClient` needs to be constructed with a non-empty, valid `PrismaClientOptions`:
+
+```
+new PrismaClient({
+  ...
+})
+```
+
+or
+
+```
+constructor() {
+  super({ ... });
+}
+```
+          
+    at new t (D:\Claude Projects\CodePulse\node_modules\.pnpm\@prisma+client@7.5.0_prisma_6ee567b319ba67f6e5d679956c886ad8\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:320:15)
+    at Object.<anonymous> (D:\Claude Projects\CodePulse\apps\ws-server\src\db.ts:9:19)
+    at Module._compile (node:internal/modules/cjs/loader:1565:14)
+    at Module.m._compile (D:\Claude Projects\CodePulse\node_modules\.pnpm\ts-node@10.9.2_@types+node@20.19.37_typescript@5.9.3\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1708:10
+    at Object.require.extensions.<computed> [as .ts] (D:\Claude Projects\CodePulse\node_modules\.pnpm\ts-node@10.9.2_@types+node@20.19.37_typescript@5.9.3\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1318:32)
+    at Function._load (node:internal/modules/cjs/loader:1128:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:219:24) {
+  clientVersion: '7.5.0',
+  errorCode: undefined,
+  retryable: undefined
+}

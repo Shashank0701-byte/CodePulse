@@ -1,47 +1,43 @@
 import express from "express";
 import { WebSocketServer, WebSocket } from "ws";
 import http from "http";
-import { prisma } from "./db.js";
-import { handleHeartbeat } from "./heartbeat.js";
+import { validateApiKey } from "./auth";
+import { handleHeartbeat } from "./handlers/heartbeat";
 
+const PORT = process.env.PORT || 3001;
 const app = express();
-const server = http.createServer(app);
-const wss = new WebSocketServer({ noServer: true });
 
+// Basic health check endpoint
 app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+  res.status(200).json({ status: "ok" });
 });
 
-// Upgrade HTTP to WS if authenticated
+const server = http.createServer(app);
+
+// Create the WebSocket Server
+// We set noServer: true because we want to manually handle the UPGRADE request to perform auth.
+const wss = new WebSocketServer({ noServer: true });
+
+// Intercept the HTTP Upgrade request to validate the x-api-key
 server.on("upgrade", async (request, socket, head) => {
   try {
-    const url = new URL(request.url || "", `http://${request.headers.host}`);
-    
-    if (url.pathname !== "/ws") {
-      socket.destroy();
-      return;
-    }
-
     const apiKey = request.headers["x-api-key"] as string | undefined;
 
-    if (!apiKey || typeof apiKey !== "string") {
-      socket.write("HTTP/1.1 401 Unauthorized\r\n\r\nAPI Key missing");
+    // Validate the API key against the database
+    const userId = apiKey ? await validateApiKey(apiKey) : null;
+
+    if (!userId) {
+      // 401 Unauthorized
+      socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;
     }
 
-    const user = await prisma.user.findUnique({
-      where: { apiKey }
-    });
-
-    if (!user) {
-      socket.write("HTTP/1.1 401 Unauthorized\r\n\r\nInvalid API Key");
-      socket.destroy();
-      return;
-    }
-
+    // Upgrade the connection if authorized
     wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit("connection", ws, request, user.id);
+      // Attach the authenticated userId to the websocket connection object
+      (ws as any).userId = userId;
+      wss.emit("connection", ws, request);
     });
   } catch (err) {
     console.error("Upgrade error:", err);
@@ -49,19 +45,26 @@ server.on("upgrade", async (request, socket, head) => {
   }
 });
 
-wss.on("connection", (ws: WebSocket, request: http.IncomingMessage, userId: string) => {
-  console.log(`[WS] Connected user: ${userId}`);
+// Handle active connections
+wss.on("connection", (ws: WebSocket) => {
+  const userId = (ws as any).userId as string;
+  console.log(`User connected: ${userId}`);
 
   ws.on("message", async (message: Buffer) => {
-    await handleHeartbeat(ws, userId, message.toString());
+    const rawData = message.toString();
+    await handleHeartbeat(userId, rawData);
   });
 
   ws.on("close", () => {
-    console.log(`[WS] Disconnected user: ${userId}`);
+    console.log(`User disconnected: ${userId}`);
+    // Presence TTL will naturally expire in Redis, so we don't need to manually delete.
+  });
+
+  ws.on("error", (error) => {
+    console.error(`WebSocket error for user ${userId}:`, error);
   });
 });
 
-const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
-  console.log(`🚀 ws-server listening on port ${PORT}`);
+  console.log(`CodePulse WebSocket server running on port ${PORT}`);
 });
