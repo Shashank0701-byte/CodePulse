@@ -34,6 +34,17 @@
   box-shadow: 0 0 20px rgba(0, 255, 157, 0.15);
 }
 
+.glass-panel {
+  background: rgba(27, 40, 35, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 157, 0.1);
+}
+
+.contribution-cell {
+  aspect-ratio: 1/1;
+  border-radius: 2px;
+}
+
 @keyframes gridMove {
   from { background-position: 0 0; }
   to { background-position: 40px 40px; }
