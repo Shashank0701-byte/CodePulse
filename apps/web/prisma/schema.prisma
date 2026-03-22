@@ -96,8 +96,10 @@ model CodingSession {
   userId          String
   startTime       DateTime
   endTime         DateTime?
+  primaryFile     String?
   primaryLanguage String?
   primaryProject  String?
+  lastHeartbeat   DateTime @default(now())
   aiSummary       String?
   createdAt       DateTime @default(now())
 

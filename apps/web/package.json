@@ -12,6 +12,7 @@
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
+    "date-fns": "^4.1.0",
     "ioredis": "^5.10.0",
     "next": "16.1.7",
     "next-auth": "5.0.0-beta.30",
