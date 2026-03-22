@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -16,10 +17,10 @@ export default function Home() {
             <a className="text-sm font-medium hover:text-primary transition-colors" href="#">Settings</a>
           </nav>
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark rounded-lg text-sm font-bold hover:brightness-110 transition-all">
+            <Link href="/login" className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark rounded-lg text-sm font-bold hover:brightness-110 transition-all">
               <span className="material-symbols-outlined text-[20px]">terminal</span>
               <span>GitHub Login</span>
-            </button>
+            </Link>
             <div className="size-9 rounded-full bg-slate-800 border border-white/10 overflow-hidden relative">
               <Image
                 alt="User profile avatar"
@@ -48,9 +49,9 @@ export default function Home() {
               A real-time developer presence platform powered by your editor. Share your progress, stack, and activity with one simple sync.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="px-8 py-4 bg-primary text-background-dark rounded-xl font-bold text-lg hover:scale-105 transition-transform glow-shadow">
+              <Link href="/login" className="flex items-center justify-center px-8 py-4 bg-primary text-background-dark rounded-xl font-bold text-lg hover:scale-105 transition-transform glow-shadow">
                 Get Your CodePulse Profile
-              </button>
+              </Link>
               <button className="px-8 py-4 glass text-white rounded-xl font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined">extension</span>
                 Install Extension
@@ -184,9 +185,9 @@ export default function Home() {
               <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight">Ready to pulse?</h2>
               <p className="text-slate-400 text-lg mb-10">Join thousands of developers sharing their journey in real-time. Start building in the open.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="px-10 py-5 bg-primary text-background-dark rounded-2xl font-black text-xl hover:scale-105 transition-transform glow-shadow">
+                <Link href="/login" className="flex items-center justify-center px-10 py-5 bg-primary text-background-dark rounded-2xl font-black text-xl hover:scale-105 transition-transform glow-shadow">
                   Get Started Free
-                </button>
+                </Link>
                 <button className="px-10 py-5 bg-white/5 border border-white/10 rounded-2xl font-black text-xl hover:bg-white/10 transition-all">
                   View Demo Profile
                 </button>
