@@ -10,11 +10,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        'primary':       '#00ff9d',
         'pulse-green':   '#00FF9D',
         'pulse-bg':      '#0B0D10',
         'pulse-surface': '#111827',
         'pulse-border':  '#1f2937',
         'pulse-muted':   '#6b7280',
+        'background-light': '#f5f8f7',
+        'background-dark': '#0f231b',
       },
       fontFamily: {
         display: ['Inter', 'sans-serif'],

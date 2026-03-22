@@ -1,11 +1,19 @@
-import NextAuth from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import { generateApiKey } from "@/lib/api-key";
 
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
+  }
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma as any),
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID!,
@@ -14,14 +22,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async session({ session, user }) {
-      // Attach user ID to the session so we can use it client-side
-      session.user.id = user.id;
+      if (session.user && user.id) {
+        session.user.id = user.id;
+      }
       return session;
     },
   },
   events: {
     async createUser({ user }) {
-      // On first sign-up, generate an API key and set username from GitHub
       if (user.id) {
         const username =
           user.name?.toLowerCase().replace(/\s+/g, "") ??
