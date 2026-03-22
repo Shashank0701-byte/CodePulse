@@ -1,6 +1,23 @@
 import React from 'react';
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { redirect } from "next/navigation";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { apiKey: true }
+  });
+
+  const displayApiKey = user?.apiKey 
+    ? `${user.apiKey.slice(0, 7)}...${user.apiKey.slice(-4)}`
+    : "Not generated yet";
+
   return (
     <div className="space-y-8">
       {/* Header Section */}
@@ -66,7 +83,7 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4 z-10">
             <div className="flex items-center gap-2 bg-pulse-bg/60 rounded-lg p-2 border border-pulse-green/20">
-              <code className="text-xs text-pulse-green/80 truncate">sk_live_284...9482</code>
+              <code className="text-xs text-pulse-green/80 truncate">{displayApiKey}</code>
               <button className="ml-auto text-pulse-green hover:text-white">
                 <span className="material-symbols-outlined text-sm">content_copy</span>
               </button>

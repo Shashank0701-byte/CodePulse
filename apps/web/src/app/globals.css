@@ -7,7 +7,14 @@
   --color-background-light: #f5f8f7;
   --color-background-dark: #0B0D10;
 
+  --color-pulse-green: #00ff9d;
+  --color-pulse-bg: #0B0D10;
+  --color-pulse-surface: #111827;
+  --color-pulse-border: #1f2937;
+  --color-pulse-muted: #6b7280;
+
   --font-display: var(--font-inter), sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
   --radius-DEFAULT: 0.5rem;
   --radius-lg: 0.75rem;
