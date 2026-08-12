@@ -10,6 +10,7 @@ export type PresenceUpdate = {
   branch?: string;
   timestamp: number;
   activity?: "high" | "peak" | "mid" | "none";
+  summary?: string;
 };
 
 export function usePresence(targetUserId?: string) {

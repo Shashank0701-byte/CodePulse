@@ -1,7 +1,9 @@
 import { HeartbeatSchema, SESSION_TIMEOUT_MS } from "@codepulse/shared";
 import { db } from "../db";
+import { redis } from "../redis";
 import { updatePresence } from "./presence";
 import { isSessionStale } from "./session-timeout";
+import { generateSummary, SUMMARY_TTL_SECONDS } from "../lib/ai-summary";
 
 export async function handleHeartbeat(userId: string, rawData: string) {
   console.log(`[WS] Heartbeat received from ${userId} at ${new Date().toISOString()}`);
@@ -61,7 +63,7 @@ export async function handleHeartbeat(userId: string, rawData: string) {
         }
 
         // Start new session
-        await db.codingSession.create({
+        const session = await db.codingSession.create({
             data: {
                 userId,
                 primaryProject: payload.project,
@@ -71,6 +73,20 @@ export async function handleHeartbeat(userId: string, rawData: string) {
                 lastHeartbeat: now,
             }
         });
+
+        // Fire-and-forget: don't block heartbeat processing on LLM latency
+        generateSummary(payload)
+          .then(async (summary) => {
+            await Promise.allSettled([
+              db.codingSession.update({
+                where: { id: session.id },
+                data: { aiSummary: summary },
+              }).catch((err) => console.error("Failed to persist aiSummary:", err)),
+              redis.set(`user:summary:${userId}`, summary, "EX", SUMMARY_TTL_SECONDS)
+                .catch((err) => console.error("Failed to cache summary:", err)),
+            ]);
+          })
+          .catch((err) => console.error("AI summary generation failed:", err));
     }
 
     // 3. Update live presence in Redis
