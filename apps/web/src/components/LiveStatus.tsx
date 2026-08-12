@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { getStatusHeadline } from "@/lib/live-status";
 
 type PresenceUpdate = {
   userId: string;
@@ -10,6 +11,7 @@ type PresenceUpdate = {
   branch?: string;
   timestamp: number;
   activity?: "high" | "peak" | "mid" | "none";
+  summary?: string;
 };
 
 export default function LiveStatus({ userId }: { userId?: string }) {
@@ -101,7 +103,7 @@ export default function LiveStatus({ userId }: { userId?: string }) {
       {presence ? (
         <div className="flex flex-col gap-1">
           <h2 className="text-white text-xl font-bold tracking-tight">
-             Working on "{presence.project}"
+             {getStatusHeadline(presence)}
           </h2>
           <p className="text-sm text-pulse-green/80 font-mono truncate">
             {presence.file}
