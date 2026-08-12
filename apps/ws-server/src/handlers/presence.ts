@@ -1,14 +1,9 @@
 import { redis } from "../redis";
+import { mergeSummaryIntoPresence } from "../lib/presence-merge";
+
+export { mergeSummaryIntoPresence } from "../lib/presence-merge";
 
 const PRESENCE_TTL_SECONDS = 90;
-
-export function mergeSummaryIntoPresence<T extends object>(
-  payload: T,
-  summary: string | null
-): T & { summary?: string } {
-  if (!summary) return payload;
-  return { ...payload, summary };
-}
 
 export async function updatePresence(userId: string, payload: any) {
   const key = `user:presence:${userId}`;

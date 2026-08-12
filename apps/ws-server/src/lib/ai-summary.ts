@@ -59,14 +59,18 @@ export async function generateSummary(
       signal: controller.signal,
     });
 
-    if (!response.ok) return fallback;
+    if (!response.ok) {
+      console.error("OpenRouter returned", response.status);
+      return fallback;
+    }
 
     const data = await response.json();
     const text = data?.choices?.[0]?.message?.content;
     if (typeof text !== "string" || text.trim().length === 0) return fallback;
 
     return truncateSummary(text);
-  } catch {
+  } catch (err) {
+    console.error("AI summary generation failed, using fallback:", err);
     return fallback;
   } finally {
     clearTimeout(timeoutHandle);

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mergeSummaryIntoPresence } from "./presence";
+import { mergeSummaryIntoPresence } from "../lib/presence-merge";
 
 test("mergeSummaryIntoPresence returns the payload unchanged when there is no summary", () => {
   const payload = { project: "codepulse", file: "index.ts" };

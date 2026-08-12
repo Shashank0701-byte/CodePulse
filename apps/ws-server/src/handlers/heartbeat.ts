@@ -77,11 +77,14 @@ export async function handleHeartbeat(userId: string, rawData: string) {
         // Fire-and-forget: don't block heartbeat processing on LLM latency
         generateSummary(payload)
           .then(async (summary) => {
-            await db.codingSession.update({
-              where: { id: session.id },
-              data: { aiSummary: summary },
-            });
-            await redis.set(`user:summary:${userId}`, summary, "EX", SUMMARY_TTL_SECONDS);
+            await Promise.allSettled([
+              db.codingSession.update({
+                where: { id: session.id },
+                data: { aiSummary: summary },
+              }).catch((err) => console.error("Failed to persist aiSummary:", err)),
+              redis.set(`user:summary:${userId}`, summary, "EX", SUMMARY_TTL_SECONDS)
+                .catch((err) => console.error("Failed to cache summary:", err)),
+            ]);
           })
           .catch((err) => console.error("AI summary generation failed:", err));
     }
