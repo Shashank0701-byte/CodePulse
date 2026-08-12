@@ -1,5 +1,7 @@
 import { prisma } from "./db";
 import { startOfDay, endOfDay, subDays } from "date-fns";
+import { SESSION_TIMEOUT_MS } from "@codepulse/shared";
+import { getEffectiveSessionEnd } from "./session-window";
 
 export async function getDailyCodingTime(userId: string) {
   const today = subDays(new Date(), 1); // Last 24 hours
@@ -15,8 +17,7 @@ export async function getDailyCodingTime(userId: string) {
 
   let totalSeconds = 0;
   sessions.forEach(session => {
-    // If the session is finished, use endTime; if still active, use 'now'
-    const end = session.endTime || now;
+    const end = getEffectiveSessionEnd(session, now, SESSION_TIMEOUT_MS);
     totalSeconds += (end.getTime() - session.startTime.getTime()) / 1000;
   });
 
